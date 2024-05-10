@@ -217,20 +217,32 @@ on run(listOfCalNames)
     set AppleScript's text item delimiters to {","}
 
     -- construct a JSON array of the calendar events
+	set itemObjects to {}
     set eventObjects to {}
     set eventProps to {"title", "startDate", "endDate", "isAllDay", "location", "notes"}
     repeat with theEvent in theEvents
-        -- set eventDataStr to eventDataStr & return & {startDate: prop2str(theEvent's startDate)}
+		set subtitle to ""
         set eventObject to createDict()
+		set itemObject to createDict()
         repeat with theEventProp in eventProps
-            if (theEventProp as text) is "startDate" or (theEventProp as text) is "endDate" then
-                eventObject's setkv(theEventProp, normalizeDateString(theEvent's valueForKey:theEventProp))
+            if (theEventProp as text) is "startDate" then
+				set subtitle to normalizeDateString(theEvent's valueForKey:theEventProp)
+            else if (theEventProp as text) is "endDate" then
+				set endDate to normalizeDateString(theEvent's valueForKey:theEventProp)
+				set subtitle to subtitle & " "
+				set subtitle to subtitle & endDate
+			else if (theEventProp as text) is "title" then
+                itemObject's setkv(theEventProp, prop2str(theEvent's valueForKey:theEventProp))
             else
                 eventObject's setkv(theEventProp, prop2str(theEvent's valueForKey:theEventProp))
             end if
         end repeat
+        itemObject's setkv("subtitle", subtitle)
         copy eventObject to end of eventObjects
+		copy itemObject to end of itemObjects
     end repeat
-    return encode(eventObjects)
+
+	set json to "{\"items\" : " & encode(itemObjects) & "}"
+	return json
 
 end run
