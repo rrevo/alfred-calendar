@@ -1,8 +1,0 @@
-{
-  "recommendations": [
-    "EditorConfig.EditorConfig",
-    "ms-python.black-formatter",
-    "matangover.mypy",
-    "ms-python.flake8"
-  ]
-}
